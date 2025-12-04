@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/CSC640_Stage2_Laravel/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=CSC640_Stage2_Laravel/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Stage 1 Documentation | Kevin Deras – CSC 640 REST API</title>
+
+    <link rel="stylesheet" href="/CSC640_Stage2_Laravel/css/main.css">
+
+
+      <script src="/CSC640_Stage2_Laravel/js/main.js"></script>
+
+
+</head>
+<body>
+  <header>
+    <h1>Kevin Deras – CSC 640 REST API</h1>
+
+  <nav>
+    <ul>
+    <li>
+      <a href="/CSC640_Stage2_Laravel/">Home</a>
+    </li>
+    <li>
+      <a>Posts</a>
+    </li>
+    <li>
+      <a href="/CSC640_Stage2_Laravel/tags/">Tags</a>
+    </li>
+    </ul>
+  </nav>
+
+
+  </header>
+  <main>
+    
+  <h1>Stage 1 Documentation</h1>
+
+  
+  
+  <time datetime="0001-01-01T00:00:00&#43;00:00">January 1, 1</time>
+
+  <h1 id="stage-1--student-management-rest-api-php--mysql">Stage 1 – Student Management REST API (PHP + MySQL)</h1>
+<blockquote>
+<p>Re-implemented here using Hugo from my original Marp slides.</p>
+</blockquote>
+<hr>
+<h1 id="student-course-management-system">Student Course Management System</h1>
+<h2 id="rest-api---hw4-part-2">REST API - HW4 Part 2</h2>
+<p><strong>Kevin Deras</strong><br>
+<strong>CSC 640</strong><br>
+<strong>November 6, 2025</strong></p>
+<hr>
+<h2 id="project-overview">Project Overview</h2>
+<p>A REST API for managing students, courses, and enrollments</p>
+<p><strong>Tech Stack:</strong></p>
+<ul>
+<li>
+<p>NGINX / PHP Built-in Server</p>
+</li>
+<li>
+<p>PHP 8+ with MySQL Database</p>
+</li>
+<li>
+<p>PDO for secure database access</p>
+</li>
+<li>
+<p>Bearer Token authentication</p>
+</li>
+<li>
+<p>JSON format</p>
+</li>
+<li>
+<p>Postman for testing</p>
+</li>
+</ul>
+<p><strong>Goal:</strong> 11 API endpoints with 5 secured + Database Integration</p>
+<hr>
+<h2 id="objectives">Objectives</h2>
+<ul>
+<li>
+<p>Build a REST API following best practices</p>
+</li>
+<li>
+<p>Integrate MySQL database with proper schema</p>
+</li>
+<li>
+<p>Add secure authentication</p>
+</li>
+<li>
+<p>Follow RESTful design principles</p>
+</li>
+<li>
+<p>Keep code clean and maintainable</p>
+</li>
+<li>
+<p>Document everything</p>
+</li>
+<li>
+<p>Test all endpoints with Postman</p>
+</li>
+</ul>
+<p><strong>Result:</strong> Production-ready API with database persistence</p>
+<hr>
+<h2 id="system-architecture">System Architecture</h2>
+<pre tabindex="0"><code>Client Request
+    ↓
+NGINX/PHP Server
+    ↓
+index.php (Router)
+    ↓
+├── Auth.php (Security)
+
+├── Database.php (MySQL/PDO)
+
+└── Response.php (Output)
+</code></pre><p><strong>Database Integration:</strong> MySQL with foreign keys and cascade deletes</p>
+<hr>
+<h2 id="project-structure">Project Structure</h2>
+<pre tabindex="0"><code>student-api/
+
+├── public/
+
+│   └── index.php
+
+├── src/
+
+│   ├── Auth.php
+
+│   ├── Database.php  ← NEW!
+
+│   ├── Mock.php (legacy)
+
+│   └── Response.php
+
+├── vendor/
+
+│   └── autoload.php
+
+└── composer.json
+</code></pre><p><strong>Key Change:</strong> Database.php replaces Mock.php for data persistence</p>
+<hr>
+<h2 id="api-endpoints-overview">API Endpoints Overview</h2>
+<p>| Resource | Total | Secure |</p>
+<p>|&mdash;&mdash;&mdash;-|&mdash;&mdash;-|&mdash;&mdash;&ndash;|</p>
+<p>| Health | 1 | 0 |</p>
+<p>| Students | 5 | 1 |</p>
+<p>| Courses | 5 | 2 |</p>
+<p>| Enrollments | 3 | 2 |</p>
+<p>| <strong>Total</strong> | <strong>11</strong> | <strong>5</strong> |</p>
+<p><em>Secure endpoints require Bearer Token</em></p>
+<hr>
+<h2 id="student-endpoints">Student Endpoints</h2>
+<p>| Method | Endpoint | Auth | Description |</p>
+<p>|&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;-|&mdash;&mdash;|&mdash;&mdash;&mdash;&mdash;-|</p>
+<p>| GET | /students | No | Get all students |</p>
+<p>| GET | /students/{id} | No | Get specific student |</p>
+<p>| POST | /students | No | Create student |</p>
+<p>| PUT | /students/{id} | No | Update student |</p>
+<p>| DELETE | /students/{id} | <strong>Yes</strong> | Delete student |</p>
+<hr>
+<p><strong>Example Response:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Kevin&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;email&#34;</span>: <span style="color:#e6db74">&#34;kevin@example.com&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;created_at&#34;</span>: <span style="color:#e6db74">&#34;2025-11-06 10:30:00&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="course-endpoints">Course Endpoints</h2>
+<p>| Method | Endpoint | Auth | Description |</p>
+<p>|&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;-|&mdash;&mdash;|&mdash;&mdash;&mdash;&mdash;-|</p>
+<p>| GET | /courses | No | Get all courses |</p>
+<p>| GET | /courses/{id} | No | Get specific course |</p>
+<p>| POST | /courses | <strong>Yes</strong> | Create course |</p>
+<p>| PUT | /courses/{id} | No | Update course |</p>
+<p>| DELETE | /courses/{id} | <strong>Yes</strong> | Delete course |</p>
+<hr>
+<p><strong>Example Response:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;code&#34;</span>: <span style="color:#e6db74">&#34;CSC640&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Software Engineering&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;created_at&#34;</span>: <span style="color:#e6db74">&#34;2025-11-06 10:30:00&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="enrollment-endpoints">Enrollment Endpoints</h2>
+<p>| Method | Endpoint | Auth | Description |</p>
+<p>|&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;-|&mdash;&mdash;|&mdash;&mdash;&mdash;&mdash;-|</p>
+<p>| GET | /enrollments | No | Get all enrollments |</p>
+<p>| POST | /enrollments | <strong>Yes</strong> | Enroll student |</p>
+<p>| DELETE | /enrollments/{id} | <strong>Yes</strong> | Unenroll student |</p>
+<hr>
+<p><strong>Create Enrollment:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;student_id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;course_id&#34;</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Validates:</strong> Both student and course must exist</p>
+<hr>
+<h2 id="health-check-endpoint">Health Check Endpoint</h2>
+<p><strong>GET /status</strong></p>
+<p>Returns API health and version:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ok&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;php&#34;</span>: <span style="color:#e6db74">&#34;8.1.0&#34;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;database&#34;</span>: <span style="color:#e6db74">&#34;MySQL&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Useful for monitoring and testing</p>
+<hr>
+<h2 id="security-implementation">Security Implementation</h2>
+<p><strong>Bearer Token Authentication</strong></p>
+<p>5 Protected Endpoints:</p>
+<ol>
+<li>
+<p>DELETE /students/{id}</p>
+</li>
+<li>
+<p>POST /courses</p>
+</li>
+<li>
+<p>DELETE /courses/{id}</p>
+</li>
+<li>
+<p>POST /enrollments</p>
+</li>
+<li>
+<p>DELETE /enrollments/{id}</p>
+</li>
+</ol>
+<p><strong>Header:</strong></p>
+<pre tabindex="0"><code>
+Authorization: Bearer super-secret-123
+</code></pre><hr>
+<p><em>Token is hardcoded for now. Will use environment variables or JWT for production.</em></p>
+<hr>
+<h2 id="authphp-implementation">Auth.php Implementation</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> <span style="color:#a6e22e">App</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Auth</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">TOKEN</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;super-secret-123&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">requireBearer</span>()<span style="color:#f92672">:</span> <span style="color:#a6e22e">void</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $hdr <span style="color:#f92672">=</span> $_SERVER[<span style="color:#e6db74">&#39;HTTP_AUTHORIZATION&#39;</span>] <span style="color:#f92672">??</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">preg_match</span>(<span style="color:#e6db74">&#39;/^Bearer\s+(.+)$/i&#39;</span>, $hdr, $m) 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">||</span> $m[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">!==</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">TOKEN</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">Response</span><span style="color:#f92672">::</span><span style="color:#a6e22e">json</span>([<span style="color:#e6db74">&#39;error&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;Unauthorized&#39;</span>], <span style="color:#ae81ff">401</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Checks for Bearer token and validates it</p>
+<hr>
+<h2 id="responsephp">Response.php</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> <span style="color:#a6e22e">App</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Response</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">json</span>($data, <span style="color:#a6e22e">int</span> $code <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>)<span style="color:#f92672">:</span> <span style="color:#a6e22e">void</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">http_response_code</span>($code);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#39;Access-Control-Allow-Origin: *&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#39;Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#39;Access-Control-Allow-Headers: Content-Type, Authorization&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">echo</span> <span style="color:#a6e22e">json_encode</span>($data, <span style="color:#a6e22e">JSON_PRETTY_PRINT</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">exit</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Standardizes all responses with proper headers and CORS</p>
+<hr>
+<h2 id="databasephp---the-heart-of-part-2">Database.php - The Heart of Part 2</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> <span style="color:#a6e22e">App</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> <span style="color:#a6e22e">PDO</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Database</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#f92672">?</span><span style="color:#a6e22e">PDO</span> $pdo <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">connect</span>()<span style="color:#f92672">:</span> <span style="color:#a6e22e">PDO</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">self</span><span style="color:#f92672">::</span>$pdo <span style="color:#f92672">===</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span>$pdo <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">PDO</span>(
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mysql:host=localhost;dbname=student_api;charset=utf8mb4&#39;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;root&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                [<span style="color:#a6e22e">PDO</span><span style="color:#f92672">::</span><span style="color:#a6e22e">ATTR_ERRMODE</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">PDO</span><span style="color:#f92672">::</span><span style="color:#a6e22e">ERRMODE_EXCEPTION</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span>$pdo;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getAllStudents</span>()<span style="color:#f92672">:</span> <span style="color:#66d9ef">array</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $stmt <span style="color:#f92672">=</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">connect</span>()<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">query</span>(<span style="color:#e6db74">&#39;SELECT * FROM students ORDER BY id&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> $stmt<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">fetchAll</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Key Features:</strong> Singleton pattern, PDO prepared statements, secure by default</p>
+<hr>
+<h2 id="database-schema">Database Schema</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> students (
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    id INT AUTO_INCREMENT <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    name VARCHAR(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    email VARCHAR(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    created_at <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> courses (
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    id INT AUTO_INCREMENT <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    code VARCHAR(<span style="color:#ae81ff">50</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    title VARCHAR(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    created_at <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> enrollments (
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    id INT AUTO_INCREMENT <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    student_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    course_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    created_at <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FOREIGN</span> <span style="color:#66d9ef">KEY</span> (student_id) <span style="color:#66d9ef">REFERENCES</span> students(id) <span style="color:#66d9ef">ON</span> <span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">CASCADE</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FOREIGN</span> <span style="color:#66d9ef">KEY</span> (course_id) <span style="color:#66d9ef">REFERENCES</span> courses(id) <span style="color:#66d9ef">ON</span> <span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">CASCADE</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> unique_enrollment (student_id, course_id)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><p><strong>Foreign Keys:</strong> Ensure referential integrity</p>
+<hr>
+<h2 id="database-relationships">Database Relationships</h2>
+<p><strong>Foreign Key Constraints:</strong></p>
+<ul>
+<li>
+<p><code>enrollments.student_id</code> → <code>students.id</code> (CASCADE DELETE)</p>
+</li>
+<li>
+<p><code>enrollments.course_id</code> → <code>courses.id</code> (CASCADE DELETE)</p>
+</li>
+</ul>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>
+<p>✅ Can&rsquo;t enroll in non-existent courses</p>
+</li>
+<li>
+<p>✅ Deleting student removes enrollments automatically</p>
+</li>
+<li>
+<p>✅ Prevents duplicate enrollments</p>
+</li>
+</ul>
+<hr>
+<h2 id="sql-injection-prevention">SQL Injection Prevention</h2>
+<p><strong>All queries use PDO prepared statements:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Secure - uses placeholders
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>$stmt <span style="color:#f92672">=</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">connect</span>()<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">prepare</span>(
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;SELECT * FROM students WHERE id = ?&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$stmt<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">execute</span>([$id]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// NOT this (vulnerable):
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// $db-&gt;query(&#34;SELECT * FROM students WHERE id = $id&#34;);
+</span></span></span></code></pre></div><p><strong>Automatic protection</strong> against SQL injection attacks</p>
+<hr>
+<h2 id="routing-logic">Routing Logic</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Pattern matching for ID-based routes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ($method <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;GET&#39;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">preg_match</span>(<span style="color:#e6db74">&#39;#^/students/(\d+)$#&#39;</span>, $path, $m)) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    $id <span style="color:#f92672">=</span> (<span style="color:#a6e22e">int</span>)$m[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    $student <span style="color:#f92672">=</span> <span style="color:#a6e22e">Database</span><span style="color:#f92672">::</span><span style="color:#a6e22e">getStudentById</span>($id);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ($student) <span style="color:#a6e22e">Response</span><span style="color:#f92672">::</span><span style="color:#a6e22e">json</span>($student);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Response</span><span style="color:#f92672">::</span><span style="color:#a6e22e">json</span>([<span style="color:#e6db74">&#39;error&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;Student not found&#39;</span>], <span style="color:#ae81ff">404</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Uses regex to extract IDs from URLs, then queries database</p>
+<hr>
+<h2 id="input-validation">Input Validation</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$in <span style="color:#f92672">=</span> <span style="color:#a6e22e">readJsonBody</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$name <span style="color:#f92672">=</span> <span style="color:#a6e22e">trim</span>($in[<span style="color:#e6db74">&#39;name&#39;</span>] <span style="color:#f92672">??</span> <span style="color:#e6db74">&#39;&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$email <span style="color:#f92672">=</span> <span style="color:#a6e22e">trim</span>($in[<span style="color:#e6db74">&#39;email&#39;</span>] <span style="color:#f92672">??</span> <span style="color:#e6db74">&#39;&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ($name <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#f92672">||</span> $email <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;&#39;</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Response</span><span style="color:#f92672">::</span><span style="color:#a6e22e">json</span>([<span style="color:#e6db74">&#39;error&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;name and email are required&#39;</span>], <span style="color:#ae81ff">422</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>All POST/PUT requests validate required fields before database operations</p>
+<hr>
+<h2 id="cors-support">CORS Support</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Handle preflight requests
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ($_SERVER[<span style="color:#e6db74">&#39;REQUEST_METHOD&#39;</span>] <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;OPTIONS&#39;</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Response</span><span style="color:#f92672">::</span><span style="color:#a6e22e">json</span>([<span style="color:#e6db74">&#39;ok&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="testing-with-postman---setup">Testing with Postman - Setup</h2>
+<p><strong>Why Postman?</strong></p>
+<ul>
+<li>Industry-standard API testing tool</li>
+<li>Visual interface (no code needed initially)</li>
+<li>Save and organize test collections</li>
+<li>Easy authentication testing</li>
+<li>Perfect for API development</li>
+</ul>
+<hr>
+<p><strong>Quick Setup:</strong></p>
+<ol>
+<li>Download Postman (free)</li>
+<li>Create &ldquo;Student API&rdquo; collection</li>
+<li>Set environment variables:
+<ul>
+<li><code>base_url</code> = <code>http://localhost:8000</code></li>
+<li><code>token</code> = <code>super-secret-123</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="postman-test-example-1-health-check">Postman Test Example 1: Health Check</h2>
+<p><strong>Testing GET /status</strong></p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>Method: <code>GET</code></li>
+<li>URL: <code>http://localhost:8000/status</code></li>
+<li>No headers needed</li>
+</ul>
+<p><strong>Response (200 OK):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;ok&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;php&#34;</span>: <span style="color:#e6db74">&#34;8.1.0&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;database&#34;</span>: <span style="color:#e6db74">&#34;MySQL&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>✅ <strong>Pass</strong> - API is running and database connected</p>
+<hr>
+<h2 id="postman-test-example-2-create-student">Postman Test Example 2: Create Student</h2>
+<p><strong>Testing POST /students</strong></p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>Method: <code>POST</code></li>
+<li>URL: <code>http://localhost:8000/students</code></li>
+<li>Header: <code>Content-Type: application/json</code></li>
+<li>Body:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;John Doe&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;email&#34;</span>: <span style="color:#e6db74">&#34;john@example.com&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<p><strong>Response (201 Created):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;John Doe&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;email&#34;</span>: <span style="color:#e6db74">&#34;john@example.com&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>✅ <strong>Pass</strong> - Student created in database</p>
+<hr>
+<h2 id="postman-test-example-3-authentication">Postman Test Example 3: Authentication</h2>
+<p><strong>Testing DELETE /students/1 (Secured Endpoint)</strong></p>
+<p><strong>Without Token:</strong></p>
+<ul>
+<li>Method: <code>DELETE</code></li>
+<li>URL: <code>http://localhost:8000/students/1</code></li>
+<li>No auth header</li>
+</ul>
+<p><strong>Response:</strong> <code>401 Unauthorized</code> ❌</p>
+<p><strong>With Token:</strong></p>
+<ul>
+<li>Header: <code>Authorization: Bearer super-secret-123</code></li>
+</ul>
+<hr>
+<p><strong>Response:</strong> <code>200 OK</code> ✅</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;deleted&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Security works!</strong></p>
+<hr>
+<h2 id="postman-test-example-4-validation">Postman Test Example 4: Validation</h2>
+<p><strong>Testing POST /students with missing data</strong></p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>Method: <code>POST</code></li>
+<li>Body:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Jane&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Missing email!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><hr>
+<p><strong>Response (422 Unprocessable Entity):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;error&#34;</span>: <span style="color:#e6db74">&#34;name and email are required&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<p>✅ <strong>Pass</strong> - Validation working correctly</p>
+<hr>
+<h2 id="postman-test-example-5-foreign-keys">Postman Test Example 5: Foreign Keys</h2>
+<p><strong>Testing POST /enrollments with invalid IDs</strong></p>
+<p><strong>Request:</strong></p>
+<ul>
+<li>Method: <code>POST</code></li>
+<li>Auth: <code>Bearer super-secret-123</code></li>
+<li>Body:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;student_id&#34;</span>: <span style="color:#ae81ff">999</span>,  <span style="color:#75715e">// Doesn&#39;t exist
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">&#34;course_id&#34;</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<p><strong>Response (422 Error):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;error&#34;</span>: <span style="color:#e6db74">&#34;Student or course not found&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>✅ <strong>Pass</strong> - Database validation working</p>
+<hr>
+<h2 id="complete-test-coverage">Complete Test Coverage</h2>
+<p><strong>All 11 Endpoints Tested:</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>Endpoint Type</th>
+          <th>Scenarios Tested</th>
+          <th>Status</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Health Check</td>
+          <td>API status</td>
+          <td>✅ Pass</td>
+      </tr>
+      <tr>
+          <td>GET requests</td>
+          <td>Valid IDs, Invalid IDs (404)</td>
+          <td>✅ Pass</td>
+      </tr>
+      <tr>
+          <td>POST requests</td>
+          <td>Valid data, Missing data (422)</td>
+          <td>✅ Pass</td>
+      </tr>
+      <tr>
+          <td>PUT requests</td>
+          <td>Updates, Partial updates</td>
+          <td>✅ Pass</td>
+      </tr>
+      <tr>
+          <td>DELETE requests</td>
+          <td>With/without auth (401)</td>
+          <td>✅ Pass</td>
+      </tr>
+      <tr>
+          <td>Foreign Keys</td>
+          <td>Validation, Cascade deletes</td>
+          <td>✅ Pass</td>
+      </tr>
+      <tr>
+          <td>CORS</td>
+          <td>Preflight OPTIONS</td>
+          <td>✅ Pass</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Total:</strong> 16+ test scenarios - 100% pass rate</p>
+<hr>
+<h2 id="postman-benefits">Postman Benefits</h2>
+<p><strong>What we got from using Postman:</strong></p>
+<ul>
+<li>✅ Visual testing (no scripts needed)</li>
+<li>✅ All 11 endpoints validated</li>
+<li>✅ Auth testing (401 errors caught)</li>
+<li>✅ Validation testing (422 errors work)</li>
+<li>✅ Saved collection (reusable tests)</li>
+<li>✅ Team collaboration ready</li>
+</ul>
+<p><strong>Professional tool usage</strong></p>
+<hr>
+<h2 id="test-results">Test Results</h2>
+<p>| Test | Expected | Status |</p>
+<p>|&mdash;&mdash;|&mdash;&mdash;&mdash;-|&mdash;&mdash;&ndash;|</p>
+<p>| GET /status | 200 OK | ✅ Pass |</p>
+<p>| GET /students | 200 OK | ✅ Pass |</p>
+<p>| GET /students/999 | 404 Not Found | ✅ Pass |</p>
+<p>| POST with missing data | 422 Error | ✅ Pass |</p>
+<p>| DELETE without auth | 401 Unauthorized | ✅ Pass |</p>
+<p>| DELETE with token | 200 OK | ✅ Pass |</p>
+<p>| POST /enrollments invalid | 422 Error | ✅ Pass |</p>
+<p>| Foreign key validation | Works | ✅ Pass |</p>
+<p>| CORS preflight | 200 OK | ✅ Pass |</p>
+<p><strong>100% pass rate - All 11 endpoints working</strong></p>
+<hr>
+<h2 id="http-status-codes">HTTP Status Codes</h2>
+<p>| Code | Meaning |</p>
+<p>|&mdash;&mdash;|&mdash;&mdash;&mdash;|</p>
+<p>| 200 | OK - Success |</p>
+<p>| 201 | Created - Resource created |</p>
+<p>| 401 | Unauthorized - Missing/invalid token |</p>
+<p>| 404 | Not Found - Resource doesn&rsquo;t exist |</p>
+<p>| 422 | Unprocessable Entity - Invalid data |</p>
+<p>| 500 | Server Error - Database issue |</p>
+<hr>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li>
+<p>✅ MySQL database integration</p>
+</li>
+<li>
+<p>✅ PDO prepared statements (SQL injection safe)</p>
+</li>
+<li>
+<p>✅ Foreign key relationships</p>
+</li>
+<li>
+<p>✅ Cascade deletes</p>
+</li>
+<li>
+<p>✅ Bearer token authentication</p>
+</li>
+<li>
+<p>✅ Input validation</p>
+</li>
+<li>
+<p>✅ CORS support</p>
+</li>
+<li>
+<p>✅ RESTful architecture</p>
+</li>
+<li>
+<p>✅ Comprehensive error handling</p>
+</li>
+</ul>
+<hr>
+<h2 id="challenges">Challenges</h2>
+<p><strong>1. Database Connection Management</strong></p>
+<ul>
+<li>
+<p>Problem: Creating new connection each request</p>
+</li>
+<li>
+<p>Solution: Singleton pattern in Database.php</p>
+</li>
+</ul>
+<p><strong>2. Foreign Key Validation</strong></p>
+<ul>
+<li>
+<p>Problem: Need to verify student/course exist</p>
+</li>
+<li>
+<p>Solution: Check before creating enrollment</p>
+</li>
+</ul>
+<p><strong>3. CORS Errors</strong></p>
+<ul>
+<li>
+<p>Problem: Browser blocking requests</p>
+</li>
+<li>
+<p>Solution: Added OPTIONS handling</p>
+</li>
+</ul>
+<hr>
+<p><strong>4. Error Handling</strong></p>
+<ul>
+<li>
+<p>Problem: Raw PDO exceptions not user-friendly</p>
+</li>
+<li>
+<p>Solution: Wrapped in try-catch with clear messages</p>
+</li>
+</ul>
+<p>Database schema design was the hardest part initially</p>
+<hr>
+<h2 id="part-1-vs-part-2">Part 1 vs Part 2</h2>
+<p>| Feature | Part 1 | Part 2 |</p>
+<p>|&mdash;&mdash;&mdash;|&mdash;&mdash;&ndash;|&mdash;&mdash;&ndash;|</p>
+<p>| Data Storage | Mock.php (in-memory) | MySQL Database |</p>
+<p>| Endpoints | 10 | 11 (+ health check) |</p>
+<p>| Secure Endpoints | 4 | 5 |</p>
+<p>| Data Persistence | ❌ No | ✅ Yes |</p>
+<p>| Foreign Keys | ❌ No | ✅ Yes |</p>
+<p>| SQL Injection Protection | N/A | ✅ PDO Prepared |</p>
+<p>| Production Ready | ⚠️ No | ✅ Closer |</p>
+<hr>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<hr>
+<h2 id="work-in-progress-laravel-orm-migration">Work in Progress: Laravel ORM Migration</h2>
+<p><strong>Target Completion: November 26</strong></p>
+<p>Currently refactoring to Laravel + Eloquent:</p>
+<ul>
+<li>Moving to Laravel&rsquo;s routing structure</li>
+<li>Replacing PDO with Eloquent models</li>
+<li>Using Laravel&rsquo;s middleware &amp; validation</li>
+<li><code>.env</code> configuration management</li>
+</ul>
+<p><strong>Why Laravel?</strong></p>
+<ul>
+<li>Industry standard framework</li>
+<li>Cleaner code (60% reduction)</li>
+<li>Better testing support</li>
+<li>Modern PHP practices</li>
+</ul>
+<hr>
+<h2 id="laravel-migration-example">Laravel Migration Example</h2>
+<p><strong>Before (Current PDO):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getAllStudents</span>()<span style="color:#f92672">:</span> <span style="color:#66d9ef">array</span> {
+</span></span><span style="display:flex;"><span>    $stmt <span style="color:#f92672">=</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">connect</span>()<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">query</span>(<span style="color:#e6db74">&#39;SELECT * FROM students&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> $stmt<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">fetchAll</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>After (Laravel Eloquent):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getAllStudents</span>()<span style="color:#f92672">:</span> <span style="color:#66d9ef">array</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Student</span><span style="color:#f92672">::</span><span style="color:#a6e22e">all</span>()<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">toArray</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Much cleaner!</strong> Relationships, validation, and security built-in.</p>
+<hr>
+<h2 id="what-i-learned">What I Learned</h2>
+<ul>
+<li>
+<p>How REST APIs work in practice</p>
+</li>
+<li>
+<p>HTTP methods and status codes</p>
+</li>
+<li>
+<p>Bearer token authentication</p>
+</li>
+<li>
+<p>PHP namespaces and Composer</p>
+</li>
+<li>
+<p><strong>PDO and prepared statements</strong></p>
+</li>
+<li>
+<p><strong>Database schema design</strong></p>
+</li>
+<li>
+<p><strong>Foreign key relationships</strong></p>
+</li>
+<li>
+<p>NGINX configuration</p>
+</li>
+<li>
+<p>JSON data handling</p>
+</li>
+<li>
+<p>Security best practices</p>
+</li>
+<li>
+<p><strong>Postman testing</strong></p>
+</li>
+<li>
+<p><strong>Database connection management</strong></p>
+</li>
+</ul>
+<p>Database integration was satisfying!</p>
+<hr>
+<h2 id="project-timeline">Project Timeline</h2>
+<p>| Milestone | Planned | Actual | Status |</p>
+<p>|&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;|&mdash;&mdash;&ndash;|&mdash;&mdash;&ndash;|</p>
+<p>| Environment Setup | Nov 1 | Nov 1 | ✅ Done |</p>
+<p>| Database Schema | Nov 2 | Nov 2 | ✅ Done |</p>
+<p>| Database Integration | Nov 3 | Nov 4 | ✅ Done |</p>
+<p>| API Implementation | Nov 4 | Nov 5 | ✅ Done |</p>
+<p>| Security | Nov 5 | Nov 5 | ✅ Done |</p>
+<p>| Testing (Postman) | Nov 6 | Nov 6 | ✅ Done |</p>
+<p>| Documentation | Nov 6 | Nov 6 | ✅ Done |</p>
+<p>| Laravel ORM migration | Nov 6 | In Progress | Target: Nov 26</p>
+<p>| <strong>Submission</strong> | <strong>Nov 26</strong> | - | 🟡 In Progress |</p>
+<hr>
+<h2 id="tech-stack-summary">Tech Stack Summary</h2>
+<ul>
+<li>
+<p>Web Server: NGINX / PHP Built-in</p>
+</li>
+<li>
+<p>Backend: PHP 8+</p>
+</li>
+<li>
+<p>Database: MySQL 5.7+ with PDO</p>
+</li>
+<li>
+<p>Architecture: RESTful API</p>
+</li>
+<li>
+<p>Auth: Bearer Token</p>
+</li>
+<li>
+<p>Format: JSON</p>
+</li>
+<li>
+<p>Testing: Postman</p>
+</li>
+<li>
+<p>VCS: Git/GitHub</p>
+</li>
+</ul>
+<hr>
+<h2 id="deliverables">Deliverables</h2>
+<ul>
+<li>
+<p>✅ 11 REST API endpoints implemented</p>
+</li>
+<li>
+<p>✅ 5 secure endpoints with Bearer tokens</p>
+</li>
+<li>
+<p>✅ MySQL database with proper schema</p>
+</li>
+<li>
+<p>✅ Foreign key relationships</p>
+</li>
+<li>
+<p>✅ PDO prepared statements</p>
+</li>
+<li>
+<p>✅ Comprehensive Postman testing</p>
+</li>
+<li>
+<p>✅ Complete documentation (README + Report)</p>
+</li>
+<li>
+<p>✅ All endpoints tested and validated</p>
+</li>
+</ul>
+<hr>
+<h2 id="summary">Summary</h2>
+<ul>
+<li>
+<p>✅ Fully functional REST API</p>
+</li>
+<li>
+<p>✅ 11 endpoints (5 secured)</p>
+</li>
+<li>
+<p>✅ MySQL database integration</p>
+</li>
+<li>
+<p>✅ Clean, maintainable code</p>
+</li>
+<li>
+<p>✅ Good error handling</p>
+</li>
+<li>
+<p>✅ Comprehensive documentation</p>
+</li>
+<li>
+<p>✅ Thoroughly tested with Postman</p>
+</li>
+</ul>
+<p><strong>Production-ready foundation!</strong></p>
+<hr>
+<h2 id="database-benefits">Database Benefits</h2>
+<p><strong>What we gained:</strong></p>
+<ul>
+<li>
+<p>✅ Data persistence (survives server restarts)</p>
+</li>
+<li>
+<p>✅ Referential integrity (foreign keys)</p>
+</li>
+<li>
+<p>✅ Cascade deletes (automatic cleanup)</p>
+</li>
+<li>
+<p>✅ SQL injection protection (PDO)</p>
+</li>
+<li>
+<p>✅ Scalability (can handle more data)</p>
+</li>
+<li>
+<p>✅ Production-ready architecture</p>
+</li>
+</ul>
+<p>Much better than in-memory mock data!</p>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<p><strong>Base URL:</strong> <code>http://localhost:8000</code></p>
+<ul>
+<li>
+<p>Health: <code>/status</code></p>
+</li>
+<li>
+<p>Students: <code>/students</code>, <code>/students/{id}</code></p>
+</li>
+<li>
+<p>Courses: <code>/courses</code>, <code>/courses/{id}</code></p>
+</li>
+<li>
+<p>Enrollments: <code>/enrollments</code>, <code>/enrollments/{id}</code></p>
+</li>
+</ul>
+<p><strong>Auth header:</strong> <code>Authorization: Bearer super-secret-123</code></p>
+<p><strong>All responses:</strong> JSON format</p>
+<hr>
+<h1 id="thank-you">Thank You</h1>
+<p><strong>Kevin Deras</strong></p>
+<p><strong>CSC 640 - HW4 Part 2</strong></p>
+<p>Questions?</p>
+<p><em>End of Presentation</em></p>
+
+  
+
+
+  </main>
+  <footer>
+    <p>Copyright 2025. All rights reserved.</p>
+
+  </footer>
+</body>
+</html>

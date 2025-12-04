@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on Kevin Deras – CSC 640 REST API</title>
+    <link>http://localhost:1313/CSC640_Stage2_Laravel/</link>
+    <description>Recent content in Home on Kevin Deras – CSC 640 REST API</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="http://localhost:1313/CSC640_Stage2_Laravel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Portfolio</title>
+      <link>http://localhost:1313/CSC640_Stage2_Laravel/portfolio/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/CSC640_Stage2_Laravel/portfolio/</guid>
+      <description>&lt;h1 id=&#34;kevin-deras--csc-640-portfolio&#34;&gt;Kevin Deras – CSC 640 Portfolio&lt;/h1&gt;&#xA;&lt;p&gt;This page highlights the main pieces of my work for this course.&lt;/p&gt;&#xA;&lt;h2 id=&#34;rest-api-projects&#34;&gt;REST API Projects&lt;/h2&gt;&#xA;&lt;h3 id=&#34;project-1--php-rest-api&#34;&gt;Project 1 – PHP REST API&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Student Management REST API using plain PHP + PDO.&lt;/li&gt;&#xA;&lt;li&gt;Implemented CRUD for students, courses, and enrollments.&lt;/li&gt;&#xA;&lt;li&gt;Secured endpoints with a simple Bearer token.&lt;/li&gt;&#xA;&lt;li&gt;Tested all endpoints with Postman.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;project-2--laravel-migration&#34;&gt;Project 2 – Laravel Migration&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Migrated the Student Management REST API to &lt;strong&gt;Laravel 10&lt;/strong&gt;.&lt;/li&gt;&#xA;&lt;li&gt;Replaced raw PDO queries with &lt;strong&gt;Eloquent ORM&lt;/strong&gt;.&lt;/li&gt;&#xA;&lt;li&gt;Implemented &lt;strong&gt;Laravel Sanctum&lt;/strong&gt; for token-based authentication.&lt;/li&gt;&#xA;&lt;li&gt;Used &lt;strong&gt;migrations&lt;/strong&gt; for students, courses, and enrollments tables.&lt;/li&gt;&#xA;&lt;li&gt;Added Docker/Sail setup plus &lt;code&gt;run.sh&lt;/code&gt; and &lt;code&gt;setup.sh&lt;/code&gt; scripts.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;deployment--tooling&#34;&gt;Deployment &amp;amp; Tooling&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Docker and Docker Compose for local development.&lt;/li&gt;&#xA;&lt;li&gt;Shell scripts for one-command startup.&lt;/li&gt;&#xA;&lt;li&gt;Hugo static site (this site) as documentation and portfolio.&lt;/li&gt;&#xA;&lt;li&gt;GitHub repository and GitHub Pages for hosting.&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>Stage 1 Documentation</title>
+      <link>http://localhost:1313/CSC640_Stage2_Laravel/stage1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/CSC640_Stage2_Laravel/stage1/</guid>
+      <description>&lt;h1 id=&#34;stage-1--student-management-rest-api-php--mysql&#34;&gt;Stage 1 – Student Management REST API (PHP + MySQL)&lt;/h1&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Re-implemented here using Hugo from my original Marp slides.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;hr&gt;&#xA;&lt;h1 id=&#34;student-course-management-system&#34;&gt;Student Course Management System&lt;/h1&gt;&#xA;&lt;h2 id=&#34;rest-api---hw4-part-2&#34;&gt;REST API - HW4 Part 2&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;Kevin Deras&lt;/strong&gt;&lt;br&gt;&#xA;&lt;strong&gt;CSC 640&lt;/strong&gt;&lt;br&gt;&#xA;&lt;strong&gt;November 6, 2025&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;project-overview&#34;&gt;Project Overview&lt;/h2&gt;&#xA;&lt;p&gt;A REST API for managing students, courses, and enrollments&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Tech Stack:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;NGINX / PHP Built-in Server&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;PHP 8+ with MySQL Database&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;PDO for secure database access&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;Bearer Token authentication&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;JSON format&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;Postman for testing&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

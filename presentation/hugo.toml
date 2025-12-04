@@ -1,0 +1,4 @@
+baseURL = 'https://krdera89.github.io/CSC640_Stage2_Laravel/'
+languageCode = 'en-us'
+title = 'Kevin Deras – CSC 640 REST API'
+theme = 'csc640'
